@@ -52,7 +52,10 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 //   }
 
 class ControllerWithReactive extends GetxController {
-  RxList<SpecData> chartData = RxList.empty();
+  RxList<Rx<SpecData>> chartData =
+      RxList.empty(); //이 안에 time, num 넣으려면 어떻게 해야하는지?
+  // RxInt time = 0.obs;
+  // RxInt num = 0.obs;
   late ChartSeriesController chartSeriesController;
   late ZoomPanBehavior zoomPanBehavior;
   late Timer timer;
@@ -79,18 +82,23 @@ class ControllerWithReactive extends GetxController {
     super.onClose();
   }
 
-  int time = 0;
   void updateDataSource(Timer timer) async {
-    chartData.add(SpecData(time: time++, num: math.Random().nextInt(50)));
-    chartSeriesController.updateDataSource(
-        addedDataIndex: chartData.length - 1);
+    for (var i = 0; i < chartData.length; i++) {
+      //chartData.add(SpecData(time: i++, num: math.Random().nextInt(50)));
+      chartData.add(chartData[i]);
+      chartSeriesController.updateDataSource(
+          addedDataIndex: chartData.length - 1);
+    }
   }
 }
 
 class SpecData {
   final int time;
-  final int num;
-  SpecData({required this.time, required this.num});
+  final int num = math.Random().nextInt(50);
+  SpecData({required this.time});
+  factory SpecData.init() {
+    return SpecData(time: 0);
+  }
 }
 
 class Binding extends GetView<ControllerWithReactive> {
