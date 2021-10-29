@@ -5,7 +5,10 @@ import 'package:get/get.dart';
 class VizValues extends GetxController {
   RxDouble xVal = 0.0.obs;
   RxDouble yVal = 0.0.obs;
+   RxList<double> vizList = RxList.empty();
   late Timer timer;
+  late List<double> inVizList;
+  
 
   // @override
   // void onInit() {
