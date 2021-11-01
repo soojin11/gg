@@ -4,16 +4,66 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class GetChartController extends GetxController {
-  RxList<SpecData> chartData = RxList.empty();
+// class MyHomePage extends StatefulWidget {
+//   const MyHomePage({Key? key, required this.title}) : super(key: key);
+
+//   final String title;
+
+//   @override
+//   State<MyHomePage> createState() => _MyHomePageState();
+// }
+
+// class _MyHomePageState extends State<MyHomePage> {
+//   late List<SpecData> _chartData;
+//   late List<SpecData> _hiData;
+//   late List<SpecData> _oneData;
+//   late ChartSeriesController _chartSeriesController;
+//   late ChartSeriesController _chartSeriesControllerr;
+//   late ChartSeriesController _chartSeriesControllerrr;
+//   late ZoomPanBehavior _zoomPanBehavior;
+//   late Timer _timer;
+//   //late SfCartesianChart chart;
+
+//   @override
+//   void initState() {
+//     _chartData = getChartData();
+//     _hiData = getHiData();
+//     _oneData = getOneData();
+//     _timer =
+//         Timer.periodic(const Duration(milliseconds: 500), updateDataSource);
+
+//     _zoomPanBehavior = ZoomPanBehavior(
+//         enableSelectionZooming: true,
+//         selectionRectBorderColor: Colors.red,
+//         selectionRectBorderWidth: 1,
+//         selectionRectColor: Colors.green,
+//         enableDoubleTapZooming: true,
+//         enableMouseWheelZooming: true,
+//         enablePinching: true,
+//         enablePanning: true);
+
+//     super.initState();
+//   }
+
+//   @override
+//   void dispose() {
+//     _timer.cancel();
+//     super.dispose();
+//   }
+
+class ControllerWithReactive extends GetxController {
+  RxList<SpecData> chartData = RxList.empty(); //이 안에 time, num 넣으려면 어떻게 해야하는지?
+  // RxInt time = 0.obs;
+  // RxInt num = 0.obs;
   late ChartSeriesController chartSeriesController;
-  late ZoomPanBehavior _zoomPanBehavior;
+  late ZoomPanBehavior zoomPanBehavior;
   late Timer timer;
+
   @override
   void onInit() {
-    chartData = getChartData();
-    timer = Timer.periodic(Duration(milliseconds: 500), (timer) {});
-    _zoomPanBehavior = ZoomPanBehavior(
+    chartData;
+    timer = Timer.periodic(Duration(milliseconds: 10), updateDataSource);
+    zoomPanBehavior = ZoomPanBehavior(
         enableSelectionZooming: true,
         selectionRectBorderColor: Colors.red,
         selectionRectBorderWidth: 1,
@@ -27,44 +77,117 @@ class GetChartController extends GetxController {
 
   @override
   void onClose() {
+    timer.cancel();
     super.onClose();
+  }
+
+  int time = 0;
+  void updateDataSource(Timer timer) async {
+    //for (var i = 0; i < chartData.length; i++) {
+    //chartData.add(SpecData(time: i++, num: math.Random().nextInt(50)));
+    chartData.add(SpecData(time: time++));
+    chartSeriesController.updateDataSource(
+        addedDataIndex: chartData.length - 1);
+    //}
   }
 }
 
-//바인딩
-class ChartView extends GetView<GetChartController> {
-  const ChartView();
+class SpecData {
+  final int time;
+  final int num = math.Random().nextInt(50);
+  SpecData({required this.time});
+  factory SpecData.init() {
+    return SpecData(time: 0);
+  }
+}
+
+class Binding extends GetView<ControllerWithReactive> {
+  Binding({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return SfCartesianChart(
-      zoomPanBehavior: controller._zoomPanBehavior,
-      title: ChartTitle(text: 'Practice'),
-      series: <ChartSeries<SpecData, int>>[
-        SplineSeries(
-            dataSource: controller.chartData,
-            xValueMapper: (SpecData spec, _) => spec.time(),
-            yValueMapper: (SpecData spec, _) => spec.num())
+    return Column(
+      children: [
+        TextButton(
+            onPressed: () {
+              controller.timer.cancel();
+            },
+            child: Text("Stop")),
+        TextButton(
+            onPressed: () {
+              //controller.timer.;
+            },
+            child: Text("start")),
+        Expanded(
+            child: SfCartesianChart(
+          legend: Legend(
+              isVisible: true,
+              toggleSeriesVisibility: true,
+              position: LegendPosition.top),
+          zoomPanBehavior: controller.zoomPanBehavior,
+          primaryXAxis: NumericAxis(autoScrollingMode: AutoScrollingMode.start),
+          primaryYAxis: NumericAxis(minimum: 0, maximum: 60),
+          title: ChartTitle(text: 'TWO'),
+          series: <ChartSeries<SpecData, int>>[
+            SplineSeries(
+              name: 'Num1',
+              enableTooltip: true,
+              onRendererCreated: (ChartSeriesController ctrl) {
+                controller.chartSeriesController = ctrl;
+              },
+              dataSource: controller.chartData,
+              xValueMapper: (SpecData spec, _) => spec.time,
+              yValueMapper: (SpecData spec, _) => spec.num,
+            ),
+          ],
+        ))
       ],
     );
   }
 }
 
-RxList<SpecData> getChartData() {
-  RxList<SpecData> chartData = RxList.empty();
-  return chartData;
-}
+  
 
-Future<void> updateDataSource(Timer timer) async {
-  Get.find<GetChartController>().chartData.add;
-  //_chartData.removeAt(0);
-  Get.find<GetChartController>().chartSeriesController.updateDataSource(
-        addedDataIndex: Get.find<GetChartController>().chartData.length - 1,
-        //removedDataIndex: 0,
-      );
-}
+// @override
+// Widget build(BuildContext context) {
+//   return SafeArea(
+//       child: Scaffold(
+//     appBar: AppBar(
+//       elevation: 0,
+//       title: Text('WR'),
+//       centerTitle: true,
 
-class SpecData {
-  RxInt time;
-  RxInt num;
-  SpecData({required this.time, required this.num});
-}
+//     ),
+//     body: Column(
+//       mainAxisSize: MainAxisSize.max,
+//       children: [
+//         Container(height: 15),
+//         Expanded(
+//           child: SfCartesianChart(
+//             legend: Legend(
+//                 isVisible: true,
+//                 toggleSeriesVisibility: true,
+//                 position: LegendPosition.top),
+//             zoomPanBehavior: _zoomPanBehavior,
+//             primaryXAxis:
+//                 NumericAxis(autoScrollingMode: AutoScrollingMode.start),
+//             primaryYAxis: NumericAxis(minimum: 0, maximum: 60),
+//             title: ChartTitle(text: 'TWO'),
+//             series: <ChartSeries<SpecData, int>>[
+//               SplineSeries(
+//                 name: 'Num1',
+//                 enableTooltip: true,
+//                 onRendererCreated: (ChartSeriesController controller) {
+//                   _chartSeriesController = controller;
+//                 },
+//                 dataSource: _chartData,
+//                 xValueMapper: (SpecData spec, _) => spec.time,
+
+//                 yValueMapper: (SpecData spec, _) => spec.num,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ],
+//     ),
+//   ));
+// }

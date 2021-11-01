@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wr_syncfusion/C/viz_controller.dart';
 import 'package:wr_syncfusion/V/viz_chart.dart';
-import 'package:wr_syncfusion/prac.dart';
-
-import 'one.dart';
 
 Future<void> main() async {
+  Get.put(ControllerWithReactive());
   runApp(const MyApp());
 }
 
@@ -16,15 +15,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter Demo',
-      initialBinding: BindingsBuilder(() {
-        Get.put(GetChartController());
-      }),
+      // initialBinding: BindingsBuilder(() {
+      //   // Get.put(VizValues());
+      // }),
       theme: ThemeData(primarySwatch: Colors.blue),
       home: Scaffold(
         appBar: AppBar(
           title: Text('chart'),
         ),
-        body: ChartView(),
+        body: Binding(),
       ),
     );
   }
