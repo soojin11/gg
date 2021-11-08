@@ -3,8 +3,11 @@ import 'package:get/get.dart';
 import 'package:wr_syncfusion/C/viz_controller.dart';
 import 'package:wr_syncfusion/V/viz_chart.dart';
 
+import 'V/oes_chart.dart';
+
 Future<void> main() async {
-  Get.put(ControllerWithReactive());
+  Get.put(OesController());
+  Get.put(VizController());
   runApp(const MyApp());
 }
 
@@ -23,7 +26,12 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: Text('chart'),
         ),
-        body: Binding(),
+        body: Column(
+          children: [
+            Expanded(flex: 1, child: OesChart()),
+            Expanded(flex: 1, child: Binding()),
+          ],
+        ),
       ),
     );
   }

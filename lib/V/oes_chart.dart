@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class VizController extends GetxController {
+class OesController extends GetxController {
   RxList<SpecData> chartData = RxList.empty();
   RxList<SpecData> numTwoData = RxList.empty();
   late ChartSeriesController chartSeriesController;
@@ -36,11 +36,11 @@ class VizController extends GetxController {
   int time = 0;
   int timee = 0;
   void updateDataSource(Timer timer) async {
-    chartData.add(SpecData(time: time++));
+    chartData.add(SpecData(time: time++)); //x
     chartSeriesController.updateDataSource(
         addedDataIndex: chartData.length - 1);
 
-    numTwoData.add(SpecData(time: timee++));
+    numTwoData.add(SpecData(time: timee++)); //x
     chartSeriesControllerr.updateDataSource(
         addedDataIndex: numTwoData.length - 1);
   }
@@ -56,8 +56,8 @@ class SpecData {
   }
 }
 
-class Binding extends GetView<VizController> {
-  Binding({Key? key}) : super(key: key);
+class OesChart extends GetView<OesController> {
+  OesChart({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -81,8 +81,9 @@ class Binding extends GetView<VizController> {
               position: LegendPosition.top),
           zoomPanBehavior: controller.zoomPanBehavior,
           primaryXAxis: NumericAxis(autoScrollingMode: AutoScrollingMode.start),
+          //primaryXAxis: NumericAxis(interval: 3),
           primaryYAxis: NumericAxis(minimum: 0, maximum: 60),
-          title: ChartTitle(text: 'viz'),
+          title: ChartTitle(text: 'oes'),
           series: <ChartSeries<SpecData, int>>[
             SplineSeries(
               name: 'Num1',
